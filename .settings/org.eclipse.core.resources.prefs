@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+encoding//src/chat/ChatClient.java=UTF-8
+encoding//src/chat/ChatServerThread.java=UTF-8
+encoding//src/giaodien/InterfaceClient.java=UTF-8
+encoding//src/menu/Drink.java=UTF-8
+encoding//src/menu/JInternalFrameDrink.java=UTF-8
+encoding//src/menu/JInternalFrameFood.java=UTF-8
+encoding//src/menu/Utils.java=UTF-8
+encoding//src/time/TimeThread.java=UTF-8
