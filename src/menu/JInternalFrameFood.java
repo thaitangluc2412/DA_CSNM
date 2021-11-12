@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -21,8 +23,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-public class JInternalFrameFood extends JInternalFrame {
+import giaodien.InterfaceClient;
 
+public class JInternalFrameFood extends JInternalFrame {
+	DataOutputStream dos;
+	Socket sk = InterfaceClient.sk;
 	private JPanel contentPane;
 	private JTable table;
 	/**
@@ -76,7 +81,7 @@ public class JInternalFrameFood extends JInternalFrame {
 		btnTên.setBounds(360, 11, 145, 40);
 		contentPane.add(btnTên);
 
-		JButton btnGia = new JButton("Tên đồ ăn");
+		JButton btnGia = new JButton("Tên nước uống");
 		btnGia.setBounds(196, 11, 145, 40);
 		contentPane.add(btnGia);
 		btnGia_1.setBounds(20, 11, 156, 40);
@@ -90,7 +95,7 @@ public class JInternalFrameFood extends JInternalFrame {
 	}
 	
 	private void loadData() {
-		List<FoodDrink> lists = Utils.getList();
+		List<FoodDrink> lists = Utils.getListFood();
 		DefaultTableModel model = new DefaultTableModel() {
 			@Override
 			public Class<?> getColumnClass(int column) {
@@ -126,9 +131,30 @@ public class JInternalFrameFood extends JInternalFrame {
 				JTable source = (JTable) e.getSource();
 				int row = source.rowAtPoint(e.getPoint());
 				int column = source.columnAtPoint(e.getPoint());
-				System.out.println(row + " " + column);
 				if (!source.isRowSelected(row))
 					source.changeSelection(row, column, false, false);
+				if (column==3) {
+					
+					Thread t = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								System.out.println(table.getValueAt(row, 1).toString());
+								dos = new DataOutputStream(sk.getOutputStream());
+								dos.writeUTF(table.getValueAt(row, 1).toString() + "-" + table.getValueAt(row, 2).toString() + "button");
+								dos.flush();
+//								model.addElement("Bàn số " + count + ": "+ txtMessage.getText());
+//								lsHistory.setModel(model);
+//								txtMessage.setText("");
+							} catch (Exception e2) {
+
+							}
+
+						}
+					});
+					t.start();
+				}
+				
 			}
 		});
 		

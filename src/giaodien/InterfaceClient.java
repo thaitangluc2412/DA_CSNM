@@ -18,10 +18,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import chat.ChatClient;
+import menu.Menu;
+
+import java.awt.SystemColor;
 
 public class InterfaceClient extends JFrame {
 	private ChatClient frameChatClient = null;
@@ -44,6 +48,11 @@ public class InterfaceClient extends JFrame {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -66,8 +75,9 @@ public class InterfaceClient extends JFrame {
 	public InterfaceClient() throws UnknownHostException, IOException {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Bàn số 1");
-		setBounds(500, 100, 393, 339);
+		setBounds(1100, 100, 393, 339);
 		contentPane = new JPanel();
+		contentPane.setBackground(SystemColor.menu);
 		contentPane.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		contentPane.setFocusTraversalKeysEnabled(false);
 		contentPane.setForeground(new Color(0, 0, 0));
@@ -95,13 +105,13 @@ public class InterfaceClient extends JFrame {
 		lbTinhGio.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		lbTinhGio.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lbTinhGio.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lbTinhGio.setBounds(231, 85, 121, 31);
+		lbTinhGio.setBounds(231, 85, 131, 31);
 		contentPane.add(lbTinhGio);
 
 		lbTinhTien = new JLabel("", SwingConstants.CENTER);
 		lbTinhTien.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		lbTinhTien.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lbTinhTien.setBounds(231, 145, 121, 29);
+		lbTinhTien.setBounds(231, 145, 131, 29);
 		contentPane.add(lbTinhTien);
 		Thread time = new Thread(new Runnable() {
 			@Override
@@ -114,11 +124,27 @@ public class InterfaceClient extends JFrame {
 			}
 		});
 		time.start();
-
 		JButton btnDichVu = new JButton("Dịch Vụ");
 		buttonGroup.add(btnDichVu);
 		btnDichVu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Thread t = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						boolean onOff = false;
+						if (!onOff) {
+							Menu menu = new Menu();
+							try {
+								menu.RunMenu();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							onOff = true;
+						}
+						
+					}
+				});
+				t.start();
 			}
 		});
 		btnDichVu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -157,7 +183,7 @@ public class InterfaceClient extends JFrame {
 		buttonGroup.add(btnDangXuat);
 		btnDangXuat.setBounds(23, 198, 104, 34);
 		contentPane.add(btnDangXuat);
-		
+
 		lblNumber = new JLabel("");
 		lblNumber.setFont(new Font("Tahoma", Font.PLAIN, 24));
 		lblNumber.setBounds(215, 11, 13, 58);
@@ -183,9 +209,9 @@ public class InterfaceClient extends JFrame {
 						System.out.println("loi din");
 					}
 					while (true) {
-						//System.out.println("waiting....");
+						// System.out.println("waiting....");
 						String timeMoney = din.readUTF();
-						//System.out.println("server(from client) ----> " + timeMoney);
+						// System.out.println("server(from client) ----> " + timeMoney);
 						if (timeMoney.endsWith("time")) {
 							System.out.println(timeMoney);
 							lbTinhGio.setText(timeMoney.replace(timeMoney.substring(timeMoney.length() - 4), ""));

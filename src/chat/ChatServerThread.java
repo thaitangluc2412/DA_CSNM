@@ -14,10 +14,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
@@ -35,13 +38,14 @@ public class ChatServerThread extends Thread{
 	private JList<String> lsHistory = new JList<>();
 	private JTextPane txtMessage;
 	private JButton btnSend;
-	
+	JFrame jframe ;
 	//private static ServerSocket svsocket;
+	private Integer moneyButton = 0;
 	private int count;
 	private Socket socket = null;
 	private  DataInputStream din = null;
 	private  DataOutputStream dos = null;
-
+	
 	public ChatServerThread(Socket socket, int count) {
 		this.count = count;
 		this.socket = socket;
@@ -125,19 +129,19 @@ public class ChatServerThread extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
 		Callback listener = new Callback() {
 			@Override
 			public void onSecond(String time, String money) {
 //				System.out.println("time = " + time);
 //				System.out.println("money = " + money);
-
+				String totalMoney = (moneyButton + Integer.parseInt(money.replace(money.substring(money.length() - 4), ""))) + " VND";
 				Thread tTime = new Thread(new Runnable() {
 					@Override
 					public void run() {
 						try {						
 							dos.writeUTF(time + "time");
-							dos.writeUTF(money + "money");
+							dos.writeUTF(totalMoney + "money");
 //							System.out.println("server ---> "+time);
 //							dos.flush();
 						} catch (IOException e) {
@@ -179,10 +183,25 @@ public class ChatServerThread extends Thread{
 				try {
 					din = new DataInputStream(socket.getInputStream());
 					while (true) {
-						if (socket != null) {
-							model.addElement("Bàn số " + count + ": " + din.readUTF());
+						String msg = din.readUTF();
+						System.out.println(msg);
+						if (!msg.endsWith("button")) {
+							jframe.setVisible(true);
+							model.addElement("Bàn số " + count + ": " + msg);
 							lsHistory.setModel(model);
+						} else {
+							String[] msgs = msg.split("-");
+							moneyButton += Integer.parseInt(msgs[1].replace(msgs[1].substring(msgs[1].length() - 9), ""));
+							//System.out.println(moneyButton);
+							ImageIcon icon = new ImageIcon("turtle.png");
+							
+							JOptionPane.showMessageDialog(null, "Bàn số " + count + " yêu cầu 1 " + msgs[0],"Dịch vụ" ,JOptionPane.INFORMATION_MESSAGE,icon);
+//							final JOptionPane pane = new JOptionPane("Hello");
+//						    final JDialog d = pane.createDialog((JFrame)null, "Title");
+//						    d.setLocation(10,10);
+//						    d.setVisible(true);
 						}
+						
 						Thread.sleep(1000);
 					}
 
@@ -197,7 +216,7 @@ public class ChatServerThread extends Thread{
 	 * Create the frame.
 	 */
 	public void Innit() {
-		JFrame jframe = new JFrame();
+		jframe = new JFrame();
 		// setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.setBounds(100, 100, 724, 449);
 		contentPane = new JPanel();
@@ -255,6 +274,6 @@ public class ChatServerThread extends Thread{
 
 		lsHistory.setBorder(new LineBorder(new Color(30, 144, 255), 2));
 		jframe.setContentPane(contentPane);
-		jframe.setVisible(true);
+		
 	}
 }

@@ -34,7 +34,7 @@ import javax.swing.JScrollPane;
 public class ChatClient extends JFrame {
 	// static Socket sk;
 
-	static Socket sk = InterfaceClient.sk;
+	Socket sk = InterfaceClient.sk;
 //	static DataInputStream din = InterfaceClient.din;
 	// static DataInputStream din;
 	DataOutputStream dos;
